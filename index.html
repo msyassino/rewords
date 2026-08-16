@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AdTopUp - Game Top-Up Center</title>
+    <meta name="description" content="Top up your favorite mobile games by watching ads. Free, transparent, and secure.">
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        <div class="loader-content">
+            <div class="loader-logo">
+                <i class="fas fa-gamepad"></i>
+            </div>
+            <span class="loader-title">ADTOPUP</span>
+            <span class="loader-subtitle" data-en="Game Top-Up Center" data-ar="مركز شحن الألعاب">Game Top-Up Center</span>
+            <div class="loader-bar"><div class="loader-progress"></div></div>
+        </div>
+    </div>
+
+    <!-- Cursor -->
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-ring" id="cursor-ring"></div>
+
+    <!-- Particles -->
+    <canvas class="particles-canvas" id="particles-canvas"></canvas>
+
+    <!-- Scroll Progress -->
+    <div class="scroll-progress"><div class="scroll-progress-bar"></div></div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-container">
+            <a href="#home" class="navbar-logo">
+                <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
+                <div class="navbar-logo-text">
+                    <span class="logo-main">ADTOPUP</span>
+                    <span class="logo-sub">GAMING</span>
+                </div>
+            </a>
+
+            <div class="navbar-links">
+                <a href="#home" class="nav-link active" data-en="Home" data-ar="الرئيسية">Home</a>
+                <a href="#games" class="nav-link" data-en="Games" data-ar="الألعاب">Games</a>
+                <a href="#earn" class="nav-link" data-en="Earn Points" data-ar="اكسب نقاط">Earn Points</a>
+                <a href="#orders" class="nav-link" data-en="My Orders" data-ar="طلباتي">My Orders</a>
+                <a href="#how" class="nav-link" data-en="How It Works" data-ar="كيف يعمل">How It Works</a>
+            </div>
+
+            <div class="navbar-actions">
+                <button class="nav-action-btn coins-btn" id="coins-btn" title="My Points">
+                    <i class="fas fa-coins"></i>
+                    <span class="coin-balance" id="nav-points">0</span>
+                </button>
+                <button class="nav-action-btn" id="theme-toggle" title="Toggle Theme">
+                    <i class="fas fa-sun"></i>
+                </button>
+                <button class="nav-action-btn" id="lang-switcher" title="Language">
+                    <span class="lang-text">AR</span>
+                </button>
+                <button class="nav-action-btn" id="effects-toggle" title="Effects">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                </button>
+                <button class="nav-action-btn" id="auth-btn" title="Account">
+                    <i class="fas fa-user"></i>
+                </button>
+                <button class="nav-action-btn mobile-menu-btn" id="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="#home" class="mobile-nav-link" data-en="Home" data-ar="الرئيسية">Home</a>
+            <a href="#games" class="mobile-nav-link" data-en="Games" data-ar="الألعاب">Games</a>
+            <a href="#earn" class="mobile-nav-link" data-en="Earn Points" data-ar="اكسب نقاط">Earn Points</a>
+            <a href="#orders" class="mobile-nav-link" data-en="My Orders" data-ar="طلباتي">My Orders</a>
+            <a href="#how" class="mobile-nav-link" data-en="How It Works" data-ar="كيف يعمل">How It Works</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="app-container" id="app-container">
+            <!-- Dynamic content rendered by JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
+                        <span class="footer-logo-text">ADTOPUP</span>
+                    </div>
+                    <p class="footer-description" data-en="Top up your favorite mobile games by watching ads. Transparent, free, and secure. We earn from ads, you get free top-ups!" data-ar="اشحن ألعابك المفضلة عبر مشاهدة الإعلانات. شفاف، مجاني، وآمن! نحن نربح من الإعلانات، وأنت تحصل على شحن مجاني!">Top up your favorite mobile games by watching ads. Transparent, free, and secure.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h3 class="footer-title" data-en="Quick Links" data-ar="روابط سريعة">Quick Links</h3>
+                    <ul class="footer-list">
+                        <li><a href="#home" data-en="Home" data-ar="الرئيسية">Home</a></li>
+                        <li><a href="#games" data-en="Games" data-ar="الألعاب">Games</a></li>
+                        <li><a href="#earn" data-en="Earn Points" data-ar="اكسب نقاط">Earn Points</a></li>
+                        <li><a href="#orders" data-en="Track Order" data-ar="تتبع الطلب">Track Order</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3 class="footer-title" data-en="Popular Games" data-ar="ألعاب شائعة">Popular Games</h3>
+                    <ul class="footer-list" id="footer-games">
+                        <!-- Filled by JS -->
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h3 class="footer-title" data-en="Legal" data-ar="قانوني">Legal</h3>
+                    <ul class="footer-list">
+                        <li><a href="#privacy" data-en="Privacy Policy" data-ar="سياسة الخصوصية">Privacy Policy</a></li>
+                        <li><a href="#terms" data-en="Terms of Service" data-ar="شروط الخدمة">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 AdTopUp. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span></p>
+                <p class="footer-ad-notice" data-en="⚡ This site is 100% funded by advertisements. By using this site, you agree to view ads." data-ar="⚡ هذا الموقع ممول 100% من الإعلانات. باستخدامك للموقع، أنت توافق على مشاهدة الإعلانات.">⚡ This site is 100% funded by advertisements.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="auth-modal">
+        <div class="modal-backdrop" onclick="UI.closeModal('auth-modal')"></div>
+        <div class="modal-content auth-modal-content">
+            <div class="auth-header">
+                <h2 class="auth-title" id="auth-title"><i class="fas fa-user"></i> Login</h2>
+                <button class="modal-close" onclick="UI.closeModal('auth-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="auth-body">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" id="auth-login-tab" data-en="Login" data-ar="دخول">Login</button>
+                    <button class="auth-tab" id="auth-register-tab" data-en="Register" data-ar="تسجيل">Register</button>
+                </div>
+                <form id="auth-form">
+                    <div class="form-group" id="auth-name-group" style="display:none;">
+                        <label class="form-label" data-en="Username" data-ar="اسم المستخدم">Username</label>
+                        <input type="text" class="form-input" id="auth-name" placeholder="Gamer123" maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-en="Email" data-ar="البريد الإلكتروني">Email</label>
+                        <input type="email" class="form-input" id="auth-email" placeholder="you@email.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-en="Password" data-ar="كلمة المرور">Password</label>
+                        <input type="password" class="form-input" id="auth-password" placeholder="••••••••" minlength="6" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        <span id="auth-submit-text" data-en="Login" data-ar="دخول">Login</span>
+                    </button>
+                </form>
+                <div class="auth-error" id="auth-error"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Points/Earn Modal -->
+    <div class="modal" id="points-modal">
+        <div class="modal-backdrop" onclick="UI.closeModal('points-modal')"></div>
+        <div class="modal-content points-modal-content">
+            <div class="points-header">
+                <h2 class="points-title"><i class="fas fa-coins"></i> <span data-en="My Points" data-ar="نقاطي">My Points</span></h2>
+                <button class="modal-close" onclick="UI.closeModal('points-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="points-body">
+                <div class="points-balance-card">
+                    <div class="points-balance-icon"><i class="fas fa-coins"></i></div>
+                    <div>
+                        <div class="points-balance-value" id="modal-points-value">0</div>
+                        <div class="points-balance-label" data-en="Available Points" data-ar="النقاط المتاحة">Available Points</div>
+                    </div>
+                </div>
+
+                <div class="points-section-label" data-en="Earn Points" data-ar="اكسب نقاط">Earn Points</div>
+                <div class="points-methods">
+                    <div class="coin-method-card">
+                        <div class="coin-method-icon gift"><i class="fas fa-gift"></i></div>
+                        <div class="coin-method-info">
+                            <div class="coin-method-name" data-en="Daily Gift" data-ar="هدية يومية">Daily Gift</div>
+                            <div class="coin-method-desc" data-en="Free points every day" data-ar="نقاط مجانية كل يوم">Free points every day</div>
+                        </div>
+                        <button class="btn btn-sm btn-gold" id="daily-gift-btn" data-en="Claim" data-ar="استلم">Claim</button>
+                    </div>
+                    <div class="coin-method-card">
+                        <div class="coin-method-icon ad"><i class="fas fa-play-circle"></i></div>
+                        <div class="coin-method-info">
+                            <div class="coin-method-name" data-en="Watch Ad" data-ar="شاهد إعلان">Watch Ad</div>
+                            <div class="coin-method-desc" data-en="Watch & earn points" data-ar="شاهد واكسب نقاط">Watch & earn points</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" id="ad-watch-btn" data-en="Watch" data-ar="شاهد">Watch</button>
+                    </div>
+                    <div class="coin-method-card">
+                        <div class="coin-method-icon" style="background:rgba(139,92,246,.15);color:var(--neon-purple);"><i class="fas fa-list-tasks"></i></div>
+                        <div class="coin-method-info">
+                            <div class="coin-method-name" data-en="Complete Tasks" data-ar="أكمل المهام">Complete Tasks</div>
+                            <div class="coin-method-desc" data-en="Visit links & earn more" data-ar="زر الروابط واكسب المزيد">Visit links & earn more</div>
+                        </div>
+                        <button class="btn btn-sm btn-secondary" id="tasks-btn" data-en="Tasks" data-ar="مهام">Tasks</button>
+                    </div>
+                </div>
+
+                <div class="points-section-label" style="margin-top:var(--space-lg);" data-en="Redeem Code" data-ar="استخدم كود">Redeem Code</div>
+                <div class="redeem-row">
+                    <input type="text" class="form-input" id="redeem-code-input" placeholder="ENTER CODE" maxlength="20">
+                    <button class="btn btn-gold" id="redeem-btn" data-en="Redeem" data-ar="تفعيل">Redeem</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Submit Modal -->
+    <div class="modal" id="order-modal">
+        <div class="modal-backdrop" onclick="UI.closeModal('order-modal')"></div>
+        <div class="modal-content order-modal-content">
+            <div class="auth-header">
+                <h2 class="auth-title"><i class="fas fa-shopping-cart"></i> <span data-en="Submit Order" data-ar="إرسال الطلب">Submit Order</span></h2>
+                <button class="modal-close" onclick="UI.closeModal('order-modal')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="auth-body">
+                <div class="order-summary" id="order-summary">
+                    <!-- Filled by JS -->
+                </div>
+                <form id="order-form">
+                    <div class="form-group">
+                        <label class="form-label" data-en="Game ID / Player ID" data-ar="معرف اللعبة / اللاعب">Game ID / Player ID</label>
+                        <input type="text" class="form-input" id="order-game-id" placeholder="123456789" required maxlength="30">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-en="Additional Info (optional)" data-ar="معلومات إضافية (اختياري)">Additional Info (optional)</label>
+                        <input type="text" class="form-input" id="order-extra" placeholder="Server, nickname..." maxlength="100">
+                    </div>
+                    <div class="order-cost-notice">
+                        <i class="fas fa-info-circle"></i>
+                        <span data-en="Your points will be deducted immediately. Top-up is delivered within 1-24 hours." data-ar="سيتم خصم نقاطك فوراً. يتم تسليم الشحن خلال 1-24 ساعة.">Your points will be deducted immediately. Top-up is delivered within 1-24 hours.</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width:100%;">
+                        <i class="fas fa-paper-plane"></i> <span data-en="Submit Order" data-ar="إرسال الطلب">Submit Order</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Back to Top -->
+    <button class="back-to-top" id="back-to-top"><i class="fas fa-arrow-up"></i></button>
+
+    <!-- Cookie Banner -->
+    <div class="cookie-banner" id="cookie-banner" style="display:none;">
+        <div class="cookie-banner-inner">
+            <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
+            <p class="cookie-text" data-en="This site uses ads to fund your free top-ups. We also use cookies for preferences." data-ar="هذا الموقع يستخدم الإعلانات لتمويل شحناتك المجانية. نستخدم أيضاً ملفات تعريف الارتباط.">This site uses ads to fund your free top-ups.</p>
+            <div class="cookie-actions">
+                <button class="btn btn-sm btn-primary" id="cookie-accept" data-en="Accept" data-ar="قبول">Accept</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
