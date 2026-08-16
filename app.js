@@ -7,12 +7,13 @@ Secure + Lightweight + Firebase Powered
 // ==================== 1. CONFIGURATION ====================
 const CONFIG = {
     firebase: {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+         apiKey: "AIzaSyBPMbRdVEJ85Is7eg4UkAFs_UHq-BD_Fhg",
+  authDomain: "rewords-45ccf.firebaseapp.com",
+  projectId: "rewords-45ccf",
+  storageBucket: "rewords-45ccf.firebasestorage.app",
+  messagingSenderId: "324257034049",
+  appId: "1:324257034049:web:2e75279382793007683bc0",
+  measurementId: "G-5LNDESBVST"
     },
     site: {
         name: "AdTopUp",
