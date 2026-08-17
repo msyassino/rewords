@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>ReWords - Free Game Top-Up Powered by Ads</title>
 <meta name="description" content="Top up your favorite mobile games for free by watching ads. Free Fire, PUBG, Mobile Legends, Roblox, COD and more. Transparent, secure, and fast.">
-<meta name="keywords" content="free top up, game credits, free fire diamonds, pubg UC, mobile legends, roblox robux, earn points, watch ads">
+<meta name="keywords" content="free top up, game credits, free fire diamonds, pubg UC, mobile legends, roblox robux, earn money, watch ads">
 <meta name="author" content="ReWords">
 <meta name="robots" content="index, follow">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -46,14 +46,12 @@
 <div class="loader-bar"><div class="loader-progress"></div></div>
 </div>
 </div>
-<div class="cursor-dot" id="cursor-dot"></div>
-<div class="cursor-ring" id="cursor-ring"></div>
 <canvas class="particles-canvas" id="particles-canvas"></canvas>
 <div class="scroll-progress"><div class="scroll-progress-bar"></div></div>
 
 <nav class="navbar" id="navbar">
 <div class="navbar-container">
-<a href="#home" class="navbar-logo">
+<a href="#/home" class="navbar-logo">
 <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
 <div class="navbar-logo-text">
 <span class="logo-main">REWORDS</span>
@@ -61,17 +59,16 @@
 </div>
 </a>
 <div class="navbar-links">
-<a href="#home" class="nav-link active">Home</a>
-<a href="#games" class="nav-link">Games</a>
-<a href="#earn" class="nav-link">Earn Points</a>
-<a href="#spin" class="nav-link">Spin</a>
-<a href="#orders" class="nav-link">My Orders</a>
-<a href="#how" class="nav-link">How It Works</a>
+<a href="#/home" class="nav-link active" data-route="home">Home</a>
+<a href="#/games" class="nav-link" data-route="games">Games</a>
+<a href="#/earn" class="nav-link" data-route="earn">Earn</a>
+<a href="#/topup" class="nav-link" data-route="topup">Top Up</a>
+<a href="#/support" class="nav-link" data-route="support">Support</a>
 </div>
 <div class="navbar-actions">
-<button class="nav-action-btn coins-btn" id="coins-btn" title="My Points">
-<i class="fas fa-coins"></i>
-<span class="coin-balance" id="nav-points">0</span>
+<button class="nav-action-btn points-btn" id="points-btn" title="My Balance">
+<i class="fas fa-wallet"></i>
+<span class="points-value" id="nav-points">$0.00</span>
 </button>
 <button class="nav-action-btn" id="lang-switcher" title="Language">
 <span class="lang-text">AR</span>
@@ -82,22 +79,27 @@
 <button class="nav-action-btn" id="effects-toggle" title="Effects">
 <i class="fas fa-wand-magic-sparkles"></i>
 </button>
-<button class="nav-action-btn" id="auth-btn" title="Account">
+<button class="nav-action-btn" id="auth-btn" title="Sign In">
 <i class="fas fa-user"></i>
 </button>
+<button class="nav-action-btn" id="logout-btn" title="Logout" style="display:none;">
+<i class="fas fa-sign-out-alt"></i>
+</button>
+<a href="#/admin" class="nav-action-btn" id="admin-nav-link" title="Admin" style="display:none;">
+<i class="fas fa-shield-halved"></i>
+</a>
 <button class="nav-action-btn mobile-menu-btn" id="mobile-menu-btn">
 <i class="fas fa-bars"></i>
 </button>
 </div>
 </div>
 <div class="mobile-menu" id="mobile-menu">
-<a href="#home" class="mobile-nav-link">Home</a>
-<a href="#games" class="mobile-nav-link">Games</a>
-<a href="#earn" class="mobile-nav-link">Earn Points</a>
-<a href="#spin" class="mobile-nav-link">Spin</a>
-<a href="#orders" class="mobile-nav-link">My Orders</a>
-<a href="#how" class="mobile-nav-link">How It Works</a>
-<a href="#updates" class="mobile-nav-link">Updates</a>
+<a href="#/home" class="mobile-nav-link">Home</a>
+<a href="#/games" class="mobile-nav-link">Games</a>
+<a href="#/earn" class="mobile-nav-link">Earn</a>
+<a href="#/topup" class="mobile-nav-link">Top Up</a>
+<a href="#/support" class="mobile-nav-link">Support</a>
+<a href="#/admin" class="mobile-nav-link admin-only" style="display:none;">Admin</a>
 </div>
 </nav>
 
@@ -118,9 +120,9 @@
 <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
 <span class="footer-logo-text">REWORDS</span>
 </div>
-<p class="footer-description" id="footer-description">Top up your favorite mobile games for free by watching ads. Transparent, secure, and 100% funded by advertisements.</p>
-<div class="footer-social" id="footer-social">
-<a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
+<p class="footer-description">Top up your favorite mobile games for free by watching ads. Transparent, secure, and 100% funded by advertisements.</p>
+<div class="footer-social">
+<a href="https://discord.gg/hwMVSaj9" class="social-link" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
 <a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-telegram"></i></a>
 <a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
 <a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
@@ -129,12 +131,11 @@
 <div class="footer-links">
 <h3 class="footer-title">Quick Links</h3>
 <ul class="footer-list">
-<li><a href="#home">Home</a></li>
-<li><a href="#games">Games</a></li>
-<li><a href="#earn">Earn Points</a></li>
-<li><a href="#spin">Spin Wheel</a></li>
-<li><a href="#orders">Track Order</a></li>
-<li><a href="#updates">Updates</a></li>
+<li><a href="#/home">Home</a></li>
+<li><a href="#/games">Games</a></li>
+<li><a href="#/earn">Earn</a></li>
+<li><a href="#/topup">Top Up</a></li>
+<li><a href="#/support">Support</a></li>
 </ul>
 </div>
 <div class="footer-links">
@@ -144,8 +145,8 @@
 <div class="footer-links">
 <h3 class="footer-title">Legal</h3>
 <ul class="footer-list">
-<li><a href="#privacy">Privacy Policy</a></li>
-<li><a href="#terms">Terms of Service</a></li>
+<li><a href="#/privacy">Privacy Policy</a></li>
+<li><a href="#/terms">Terms of Service</a></li>
 </ul>
 </div>
 </div>
@@ -160,36 +161,14 @@
 <div class="modal-backdrop" onclick="UI.closeModal('auth-modal')"></div>
 <div class="modal-content auth-modal-content">
 <div class="auth-header">
-<h2 class="auth-title" id="auth-title"><i class="fas fa-user"></i> Login</h2>
+<h2 class="auth-title" id="auth-title"><i class="fas fa-user"></i> Sign In</h2>
 <button class="modal-close" onclick="UI.closeModal('auth-modal')"><i class="fas fa-times"></i></button>
 </div>
 <div class="auth-body">
 <div class="auth-tabs">
-<button class="auth-tab active" id="auth-login-tab">Login</button>
-<button class="auth-tab" id="auth-register-tab">Register</button>
+<button class="auth-tab active" id="login-modal-btn">Sign In</button>
+<button class="auth-tab" id="register-modal-btn">Register</button>
 </div>
-<form id="auth-form">
-<div class="form-group" id="auth-name-group" style="display:none;">
-<label class="form-label">Username</label>
-<input type="text" class="form-input" id="auth-name" placeholder="Gamer123" maxlength="30">
-</div>
-<div class="form-group" id="auth-ref-group" style="display:none;">
-<label class="form-label">Referral Code (optional)</label>
-<input type="text" class="form-input" id="auth-ref" placeholder="Enter code" maxlength="10">
-</div>
-<div class="form-group">
-<label class="form-label">Email</label>
-<input type="email" class="form-input" id="auth-email" placeholder="you@email.com" required>
-</div>
-<div class="form-group">
-<label class="form-label">Password</label>
-<input type="password" class="form-input" id="auth-password" placeholder="Min 6 characters" minlength="6" required>
-</div>
-<button type="submit" class="btn btn-primary" style="width:100%;">
-<span id="auth-submit-text">Login</span>
-</button>
-</form>
-<div class="auth-error" id="auth-error"></div>
 </div>
 </div>
 </div>
@@ -198,110 +177,47 @@
 <div class="modal-backdrop" onclick="UI.closeModal('points-modal')"></div>
 <div class="modal-content points-modal-content">
 <div class="points-header">
-<h2 class="points-title"><i class="fas fa-coins"></i> My Points</h2>
+<h2 class="points-title"><i class="fas fa-wallet"></i> My Balance</h2>
 <button class="modal-close" onclick="UI.closeModal('points-modal')"><i class="fas fa-times"></i></button>
 </div>
 <div class="points-body">
 <div class="points-balance-card">
-<div class="points-balance-icon"><i class="fas fa-coins"></i></div>
+<div class="points-balance-icon"><i class="fas fa-wallet"></i></div>
 <div>
-<div class="points-balance-value" id="modal-points-value">0</div>
-<div class="points-balance-label">Available Points</div>
+<div class="points-balance-value" id="pm-balance">$0.00</div>
+<div class="points-balance-label">Available Balance</div>
 </div>
 </div>
-<div class="points-section-label">Earn Points</div>
-<div class="points-methods">
-<div class="coin-method-card">
-<div class="coin-method-icon gift"><i class="fas fa-gift"></i></div>
-<div class="coin-method-info">
-<div class="coin-method-name">Daily Gift</div>
-<div class="coin-method-desc">Free points every day</div>
-</div>
-<button class="btn btn-sm btn-gold" id="daily-gift-btn">Claim</button>
-</div>
-<div class="coin-method-card">
-<div class="coin-method-icon ad"><i class="fas fa-play-circle"></i></div>
-<div class="coin-method-info">
-<div class="coin-method-name">Watch Ad</div>
-<div class="coin-method-desc">Watch & earn points</div>
-</div>
-<button class="btn btn-sm btn-primary" id="ad-watch-btn">Watch</button>
-</div>
-<div class="coin-method-card">
-<div class="coin-method-icon" style="background:rgba(139,92,246,.15);color:var(--neon-purple);"><i class="fas fa-list-check"></i></div>
-<div class="coin-method-info">
-<div class="coin-method-name">Visit Link</div>
-<div class="coin-method-desc">Visit offers & earn more</div>
-</div>
-<button class="btn btn-sm btn-secondary" id="tasks-btn">Visit</button>
+<div class="points-balance-card" style="margin-top:var(--space-md);">
+<div class="points-balance-icon" style="background:rgba(0,230,118,.15);color:var(--neon-green);"><i class="fas fa-chart-line"></i></div>
+<div>
+<div class="points-balance-value" id="pm-earned">$0.00</div>
+<div class="points-balance-label">Total Earned</div>
 </div>
 </div>
-<div class="points-section-label" style="margin-top:var(--space-lg);">Redeem Code</div>
-<div class="redeem-row">
-<input type="text" class="form-input" id="redeem-code-input" placeholder="ENTER CODE" maxlength="20">
-<button class="btn btn-gold" id="redeem-btn">Redeem</button>
+<div style="margin-top:var(--space-lg);text-align:center;">
+<a href="#/earn" class="btn btn-primary" onclick="UI.closeModal('points-modal')"><i class="fas fa-coins"></i> Earn More</a>
+<a href="#/topup" class="btn btn-gold" onclick="UI.closeModal('points-modal')" style="margin-top:var(--space-sm);"><i class="fas fa-shopping-cart"></i> Top Up</a>
 </div>
 </div>
 </div>
 </div>
 
-<div class="modal" id="order-modal">
-<div class="modal-backdrop" onclick="UI.closeModal('order-modal')"></div>
-<div class="modal-content order-modal-content">
-<div class="auth-header">
-<h2 class="auth-title"><i class="fas fa-shopping-cart"></i> Submit Order</h2>
-<button class="modal-close" onclick="UI.closeModal('order-modal')"><i class="fas fa-times"></i></button>
+<div class="spin-wheel-overlay" id="spin-wheel-overlay">
+<div class="spin-wheel-modal glass">
+<h2 class="spin-wheel-title">Spin the Wheel!</h2>
+<div class="spin-wheel-wrapper">
+<div class="spin-pointer" id="spin-pointer"><i class="fas fa-caret-down"></i></div>
+<div class="spin-wheel" id="spin-wheel"></div>
 </div>
-<div class="auth-body">
-<div class="order-summary" id="order-summary"></div>
-<form id="order-form">
-<div class="form-group">
-<label class="form-label">Game ID / Player ID</label>
-<input type="text" class="form-input" id="order-game-id" placeholder="123456789" required maxlength="30">
-</div>
-<div class="form-group">
-<label class="form-label">Server / Additional Info</label>
-<input type="text" class="form-input" id="order-extra" placeholder="Server, nickname..." maxlength="100">
-</div>
-<div class="order-cost-notice">
-<i class="fas fa-info-circle"></i>
-<span>Your points will be deducted immediately. Top-up is delivered manually within 1-24 hours.</span>
-</div>
-<button type="submit" class="btn btn-primary" style="width:100%;">
-<i class="fas fa-paper-plane"></i> Submit Order
-</button>
-</form>
-</div>
-</div>
-</div>
-
-<div class="modal" id="ticket-modal">
-<div class="modal-backdrop" onclick="UI.closeModal('ticket-modal')"></div>
-<div class="modal-content auth-modal-content">
-<div class="auth-header">
-<h2 class="auth-title"><i class="fas fa-headset"></i> Support Ticket</h2>
-<button class="modal-close" onclick="UI.closeModal('ticket-modal')"><i class="fas fa-times"></i></button>
-</div>
-<div class="auth-body">
-<form id="ticket-form">
-<div class="form-group">
-<label class="form-label">Subject</label>
-<input type="text" class="form-input" id="ticket-subject" placeholder="Brief description" required maxlength="100">
-</div>
-<div class="form-group">
-<label class="form-label">Message</label>
-<textarea class="form-input" id="ticket-message" placeholder="Describe your issue..." required maxlength="1000" rows="4"></textarea>
-</div>
-<button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Submit Ticket</button>
-</form>
-</div>
+<button class="spin-close-btn btn btn-primary" id="spin-close-overlay">Close</button>
 </div>
 </div>
 
 <div class="toast-container" id="toast-container"></div>
 <button class="back-to-top" id="back-to-top"><i class="fas fa-arrow-up"></i></button>
 
-<div class="cookie-banner" id="cookie-banner" style="display:none;">
+<div class="cookie-banner" id="cookie-banner">
 <div class="cookie-banner-inner">
 <div class="cookie-icon"><i class="fas fa-cookie-bite"></i></div>
 <p class="cookie-text">This site uses ads to fund your free top-ups. We also use cookies for preferences.</p>
@@ -310,6 +226,8 @@
 </div>
 </div>
 </div>
+
+<div id="announcement-banners"></div>
 
 <script src="app.js"></script>
 <script src="https://quge5.com/88/tag.min.js" data-zone="270698" async data-cfasync="false"></script>
