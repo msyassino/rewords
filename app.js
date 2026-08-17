@@ -68,9 +68,9 @@ var FB = {
 
 var I18n = {
   lang: "en",
-  init: function() { this.lang = LS.get("rw_lang") || (navigator.language.startsWith("ar") ? "ar" : "en"); this.apply(); },
-  toggle: function() { this.lang = this.lang === "en" ? "ar" : "en"; LS.set("rw_lang", this.lang); this.apply(); Router.go(Router.current); },
-  apply: function() { var rtl = this.lang === "ar"; document.documentElement.lang = this.lang; document.documentElement.dir = rtl ? "rtl" : "ltr"; var l = document.querySelector(".lang-label"); if (l) l.textContent = this.lang === "en" ? "AR" : "EN"; }
+  setLang: function(l) { this.lang = l; document.documentElement.lang = l; document.documentElement.dir = l === "ar" ? "rtl" : "ltr"; var el = document.querySelector(".lang-label"); if (el) el.textContent = l === "en" ? "AR" : "EN"; },
+  init: function() { this.setLang(LS.get("rw_lang") || (navigator.language.startsWith("ar") ? "ar" : "en")); },
+  toggle: function() { this.setLang(this.lang === "en" ? "ar" : "en"); LS.set("rw_lang", this.lang); }
 };
 
 var Theme = {
@@ -3138,6 +3138,8 @@ var Router = {
     var hash = window.location.hash.replace(/^#\/?/, "") || "home";
     var parts = hash.split("/");
 
+    try {
+
     if (parts[0] === "admin" && parts.length > 1) {
       var tab = parts.slice(1).join("/");
       Pages._adminTab = tab;
@@ -3148,6 +3150,8 @@ var Router = {
       }
       AdminPanel.render();
       AdminPanel.loadTab(tab);
+      this.current = "admin";
+      window.scrollTo(0, 0);
       return;
     }
 
@@ -3156,6 +3160,8 @@ var Router = {
       if (this.routes["order"]) {
         this.routes["order"](gameId);
       }
+      this.current = "order";
+      window.scrollTo(0, 0);
       return;
     }
 
@@ -3163,11 +3169,13 @@ var Router = {
     if (this.routes[routeName]) {
       this.routes[routeName]();
     } else {
-      this.routes["home"]();
+      if (this.routes["home"]) this.routes["home"]();
     }
 
     this.current = routeName;
     window.scrollTo(0, 0);
+
+    } catch (e) { console.error("Route error:", e); }
   },
 
   init: function () {
@@ -3217,11 +3225,10 @@ U.id = U.id || function(x) { return document.getElementById(x); };
 var App = {
   init: function () {
     try { FB.init(); } catch (e) { console.warn("FB init:", e); }
-    if (typeof I18n.lang === "function") {
-      var langVal = LS.get("lang") || "en";
-      I18n.lang(langVal);
-    }
+    try { I18n.init(); } catch (e) {}
     try { Theme.init(); } catch (e) {}
+
+    try {
 
     Router.register("home", function () { Pages.home(); });
     Router.register("earn", function () { Pages.earn(); });
@@ -3262,7 +3269,7 @@ var App = {
       var h = '<div class="auth-container"><div class="auth-card glass">';
       h += '<h2 class="text-center mb-lg">' + (ar ? "\u062a\u0633\u062c\u064A\u0644 \u0627\u0644\u062f\u062e\u0648\u0644" : "Sign In") + '</h2>';
       h += '<form id="login-form">';
-      h += '<div class="fg"><label>' + (ar ? "\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A" : "Email") + '</label><input type="email" id="login-email" class="fi" required></div>';
+      h += '<div class="fg"><label>' + (ar ? "\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062a\u0631\u0648\u0646\u064A" : "Email") + '</label><input type="email" id="login-email" class="fi" required></div>';
       h += '<div class="fg"><label>' + (ar ? "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" : "Password") + '</label><input type="password" id="login-pass" class="fi" required minlength="6"></div>';
       h += '<button type="submit" class="btn btn-primary btn-block">' + (ar ? "\u062a\u0633\u062c\u064A\u0644 \u0627\u0644\u062f\u062e\u0648\u0644" : "Sign In") + '</button>';
       h += '</form>';
@@ -3274,7 +3281,6 @@ var App = {
     });
 
     Auth.init();
-    FX.init();
     GamesManager.load();
 
     if (!LS.get("cookieConsent")) {
@@ -3289,19 +3295,18 @@ var App = {
     if (ref) LS.set("referralCode", ref);
 
     Router.init();
+
+    } catch (e) { console.error("App init error:", e); }
+
     UI.hideLoader();
-    U.observe();
+    try { U.observe(); } catch (e) {}
   },
 
   bindEvents: function () {
     var langBtn = document.getElementById("lang-btn");
     if (langBtn) {
       langBtn.addEventListener("click", function () {
-        var newLang = I18n.lang === "ar" ? "en" : "ar";
-        I18n.lang(newLang);
-        LS.set("lang", newLang);
-        var label = langBtn.querySelector(".lang-label");
-        if (label) label.textContent = newLang.toUpperCase();
+        I18n.toggle();
         var ac = document.getElementById("app");
         if (ac && Router.current && Router.routes[Router.current]) {
           try { Router.routes[Router.current](Router.params); } catch(e) {}
