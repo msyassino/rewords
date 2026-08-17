@@ -918,6 +918,7 @@ const App = {
         console.log('ReWords v2.0 initializing...');
         I18n.init();
         Theme.init();
+        FB.init();
         var cachedUser = UserState.load();
         if (FB.ok) {
             FB.auth.onAuthStateChanged(async function(user) {
@@ -978,6 +979,7 @@ const App = {
         TopUp.initOrderForm();
         this.bindGlobalEvents();
         Router.init();
+        UI.hideLoader();
         Effects.reveal();
         console.log('ReWords initialized!');
     },
