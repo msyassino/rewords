@@ -4,44 +4,95 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RewardX — Premium Earning Platform</title>
-<meta name="description" content="منصة ربح احترافية - اكسب عملات من العروض والألعاب واشحن رصيدك">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 
 <!-- Adsterra Popunder -->
 <script src="https://pl30883338.effectivecpmnetwork.com/f2/a0/3c/f2a03c3e517e5b8b30ca73eac42e76ce.js"></script>
-
 <!-- Monetag -->
 <script src="https://quge5.com/88/tag.min.js" data-zone="270698" async data-cfasync="false"></script>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- Background Mesh -->
+<!-- MAINTENANCE MODE OVERLAY -->
+<div class="maintenance-overlay" id="maintenanceOverlay" style="display:none;">
+  <div class="maintenance-card">
+    <div class="maintenance-icon">🔧</div>
+    <h1>الموقع تحت الصيانة</h1>
+    <p>نعمل على تحسين الخدمة. سنعود قريباً!</p>
+    <div class="maintenance-timer" id="maintenanceTimer"></div>
+    <div class="maintenance-progress">
+      <div class="maintenance-bar" id="maintenanceBar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">💎 Reward<span>X</span></div>
+    <h2>مرحباً بك</h2>
+    <p class="login-subtitle">سجل دخولك لبدء الكسب</p>
+    
+    <div class="login-tabs">
+      <button class="login-tab active" onclick="switchLoginTab('login')">تسجيل الدخول</button>
+      <button class="login-tab" onclick="switchLoginTab('register')">حساب جديد</button>
+    </div>
+    
+    <!-- Login Form -->
+    <form id="loginForm" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label">البريد الإلكتروني</label>
+        <input type="email" class="form-input" id="loginEmail" required placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">كلمة المرور</label>
+        <input type="password" class="form-input" id="loginPassword" required placeholder="••••••••" minlength="6">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">🔓 دخول</button>
+    </form>
+    
+    <!-- Register Form -->
+    <form id="registerForm" style="display:none;" onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label class="form-label">اسم المستخدم</label>
+        <input type="text" class="form-input" id="regUsername" required placeholder="Player123" minlength="3">
+      </div>
+      <div class="form-group">
+        <label class="form-label">البريد الإلكتروني</label>
+        <input type="email" class="form-input" id="regEmail" required placeholder="you@example.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">كلمة المرور</label>
+        <input type="password" class="form-input" id="regPassword" required placeholder="6 أحرف على الأقل" minlength="6">
+      </div>
+      <div class="form-group">
+        <label class="form-label">كود الإحالة (اختياري)</label>
+        <input type="text" class="form-input" id="regReferral" placeholder="RX123ABC">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block btn-lg">🚀 إنشاء حساب</button>
+      <p class="login-hint">ستحصل على <strong>1000 عملة</strong> مجاناً!</p>
+    </form>
+  </div>
+</div>
+
 <div class="bg-mesh"></div>
 <div class="bg-particles" id="particles"></div>
 
-<!-- NAVBAR -->
 <nav class="navbar">
   <div class="nav-left">
-    <button class="menu-toggle" onclick="toggleSidebar()">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="menu-toggle" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
     <div class="logo" onclick="navigate('home')">
       <div class="logo-icon">💎</div>
       <div class="logo-text">Reward<span class="logo-highlight">X</span></div>
     </div>
   </div>
-  
-  <div class="nav-center">
-    <div class="nav-search">
-      <span class="search-icon">🔍</span>
-      <input type="text" placeholder="ابحث عن عروض، ألعاب..." class="search-input">
-    </div>
-  </div>
-  
   <div class="nav-right">
     <div class="balance-chip" onclick="navigate('wallet')">
       <div class="chip-icon">💰</div>
@@ -49,42 +100,27 @@
         <div class="chip-label">رصيدك</div>
         <div class="chip-value" id="navBalance">0</div>
       </div>
-      <div class="chip-glow"></div>
     </div>
-    
-    <button class="icon-btn nav-icon-btn" onclick="navigate('notifications')" title="الإشعارات">
-      🔔
-      <span class="notif-badge" id="notifBadge" style="display:none;">0</span>
-    </button>
-    
-    <button class="icon-btn nav-icon-btn avatar-btn" onclick="navigate('profile')" title="حسابي">
-      <div class="user-avatar">👤</div>
-    </button>
+    <button class="icon-btn nav-icon-btn" onclick="navigate('notifications')">🔔<span class="notif-badge" id="notifBadge" style="display:none;">0</span></button>
+    <button class="icon-btn nav-icon-btn avatar-btn" onclick="navigate('profile')"><div class="user-avatar">👤</div></button>
   </div>
 </nav>
 
-<!-- APP CONTAINER -->
 <div class="app-container">
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <div class="user-card">
         <div class="user-avatar-large">👤</div>
         <div class="user-info">
           <div class="user-name" id="sidebarUserName">User</div>
-          <div class="user-level">
-            <span class="level-badge">Lv <span id="sidebarUserLevel">1</span></span>
-          </div>
+          <div class="user-level"><span class="level-badge">Lv <span id="sidebarUserLevel">1</span></span></div>
         </div>
       </div>
       <div class="xp-progress">
-        <div class="xp-bar">
-          <div class="xp-fill" id="sidebarXpFill" style="width:0%"></div>
-        </div>
+        <div class="xp-bar"><div class="xp-fill" id="sidebarXpFill" style="width:0%"></div></div>
         <div class="xp-text"><span id="sidebarUserXp">0</span> / <span id="sidebarUserXpMax">100</span> XP</div>
       </div>
     </div>
-    
     <div class="sidebar-menu">
       <div class="menu-section">
         <div class="menu-title">الرئيسية</div>
@@ -92,81 +128,43 @@
         <a class="menu-item" data-route="earn"><span class="mi-icon">💰</span><span class="mi-text">اكسب</span><span class="mi-badge hot">HOT</span></a>
         <a class="menu-item" data-route="daily"><span class="mi-icon">🎁</span><span class="mi-text">المكافآت اليومية</span></a>
       </div>
-      
       <div class="menu-section">
         <div class="menu-title">طرق الكسب</div>
         <a class="menu-item" data-route="offers"><span class="mi-icon">🎯</span><span class="mi-text">العروض</span></a>
         <a class="menu-item" data-route="games"><span class="mi-icon">🎮</span><span class="mi-text">الألعاب</span></a>
         <a class="menu-item" data-route="surveys"><span class="mi-icon">📊</span><span class="mi-text">الاستبيانات</span></a>
-        <a class="menu-item" data-route="ads"><span class="mi-icon">📺</span><span class="mi-text">شاهد الإعلانات</span></a>
         <a class="menu-item" data-route="tasks"><span class="mi-icon">✅</span><span class="mi-text">المهام</span></a>
-        <a class="menu-item" data-route="challenges"><span class="mi-icon">🏆</span><span class="mi-text">التحديات</span></a>
         <a class="menu-item" data-route="wheel"><span class="mi-icon">🎡</span><span class="mi-text">عجلة الحظ</span></a>
       </div>
-      
       <div class="menu-section">
         <div class="menu-title">المحفظة</div>
         <a class="menu-item" data-route="wallet"><span class="mi-icon">💼</span><span class="mi-text">المحفظة</span></a>
-        <a class="menu-item" data-route="store"><span class="mi-icon">🛒</span><span class="mi-text">متجر المكافآت</span></a>
+        <a class="menu-item" data-route="store"><span class="mi-icon">🛒</span><span class="mi-text">المتجر</span></a>
         <a class="menu-item" data-route="topup"><span class="mi-icon">⚡</span><span class="mi-text">شحن الألعاب</span></a>
         <a class="menu-item" data-route="withdraw"><span class="mi-icon">💸</span><span class="mi-text">السحب</span></a>
         <a class="menu-item" data-route="transactions"><span class="mi-icon">📜</span><span class="mi-text">السجل</span></a>
       </div>
-      
       <div class="menu-section">
         <div class="menu-title">المجتمع</div>
         <a class="menu-item" data-route="referrals"><span class="mi-icon">🤝</span><span class="mi-text">الإحالة</span></a>
         <a class="menu-item" data-route="leaderboard"><span class="mi-icon">🏅</span><span class="mi-text">المتصدرون</span></a>
       </div>
-      
       <div class="menu-section">
         <div class="menu-title">الحساب</div>
-        <a class="menu-item" data-route="profile"><span class="mi-icon">👤</span><span class="mi-text">الملف الشخصي</span></a>
+        <a class="menu-item" data-route="profile"><span class="mi-icon">👤</span><span class="mi-text">الملف</span></a>
         <a class="menu-item" data-route="security"><span class="mi-icon">🔒</span><span class="mi-text">الأمان</span></a>
-        <a class="menu-item" data-route="notifications"><span class="mi-icon">🔔</span><span class="mi-text">الإشعارات</span></a>
         <a class="menu-item" data-route="support"><span class="mi-icon">💬</span><span class="mi-text">الدعم</span></a>
-      </div>
-      
-      <div class="menu-section">
-        <div class="menu-title">المعلومات</div>
-        <a class="menu-item" data-route="faq"><span class="mi-icon">❓</span><span class="mi-text">الأسئلة الشائعة</span></a>
-        <a class="menu-item" data-route="terms"><span class="mi-icon">📄</span><span class="mi-text">الشروط</span></a>
-        <a class="menu-item" data-route="privacy"><span class="mi-icon">🛡️</span><span class="mi-text">الخصوصية</span></a>
-        <a class="menu-item" data-route="status"><span class="mi-icon">📊</span><span class="mi-text">حالة النظام</span></a>
         <a class="menu-item admin-link" data-route="admin"><span class="mi-icon">⚙️</span><span class="mi-text">لوحة الأدمن</span></a>
       </div>
     </div>
-    
-    <div class="sidebar-footer">
-      <div class="vip-banner">
-        <div class="vip-icon">💎</div>
-        <div class="vip-text">
-          <div class="vip-title">VIP Membership</div>
-          <div class="vip-subtitle">ترقية للحصول على مزايا حصرية</div>
-        </div>
-      </div>
-    </div>
   </aside>
-
-  <!-- MAIN CONTENT -->
-  <main class="main" id="main">
-    <div class="loader">
-      <div class="loader-spinner"></div>
-    </div>
-  </main>
+  <main class="main" id="main"></main>
 </div>
 
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toastContainer"></div>
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()"><div class="modal" id="modalContent"></div></div>
 
-<!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
-  <div class="modal" id="modalContent"></div>
-</div>
-
-<!-- Adsterra Social Bar -->
 <script src="https://pl30883339.effectivecpmnetwork.com/4e/ac/77/4eac77d9d06816802aaaabe459e4ee83.js"></script>
-
 <script src="app.js"></script>
 </body>
 </html>
