@@ -1,4 +1,5 @@
 'use strict';
+window.onerror = function() { var l = document.getElementById("loader"); if (l) { l.style.display = "none"; } return false; };
 var CONFIG = {
   fb: { apiKey: "AIzaSyBPMbRdVEJ85Is7eg4UkAFs_UHq-BD_Fhg", authDomain: "rewords-45ccf.firebaseapp.com", projectId: "rewords-45ccf", storageBucket: "rewords-45ccf.firebasestorage.app", messagingSenderId: "324257034049", appId: "1:324257034049:web:2e75279382793007683bc0", measurementId: "G-5LNDESBVST" },
   site: { name: "ReWords", url: "https://rewords.alouanepx.workers.dev" },
@@ -92,7 +93,13 @@ var UI = {
   },
   openModal: function(id) { var m = document.getElementById(id); if (m) { m.classList.add("open"); document.body.style.overflow = "hidden"; } },
   closeModal: function(id) { var m = document.getElementById(id); if (m) { m.classList.remove("open"); document.body.style.overflow = ""; } },
-  closeAll: function() { document.querySelectorAll(".modal.open").forEach(function(m) { m.classList.remove("open"); }); document.body.style.overflow = ""; }
+  closeAll: function() { document.querySelectorAll(".modal.open").forEach(function(m) { m.classList.remove("open"); }); document.body.style.overflow = ""; },
+  selectPackage: function(pkgId) {
+    document.querySelectorAll(".pkg-card").forEach(function(c) { c.classList.remove("selected"); });
+    var el = document.querySelector('[data-pkg="' + pkgId + '"]');
+    if (el) el.classList.add("selected");
+    window._selectedPkg = pkgId;
+  }
 };
 
 var FX = {
@@ -132,6 +139,10 @@ var Ledger = {
       var snap = await FB.db.collection(CONFIG.col.ledger).where("userId", "==", userId).orderBy("timestamp", "desc").limit(limit || 50).get();
       var entries = []; snap.forEach(function(d) { entries.push(d.data()); }); return entries;
     } catch (e) { return []; }
+  },
+  getRecent: function(limit) { return []; },
+  getAll: async function(userId) {
+    return this.getUserEntries(userId, 200);
   }
 };
 
@@ -201,6 +212,13 @@ var Auth = {
     });
   },
   initListener: function() { this.init(); },
+  verifyRequest: async function() {
+    if (!UserState.isLoggedIn()) return false;
+    UserState.profile.verificationStatus = "pending";
+    UserState.sync();
+    UI.toast("Verification request submitted", "success");
+    return true;
+  },
   loadProfile: async function(uid) {
     if (!FB.ok || !uid) return;
     try {
@@ -304,11 +322,16 @@ var Auth = {
 
 var UserState = {
   profile: null,
+  get: function() { return this.profile || null; },
   defaults: function() {
     return { displayName: "", email: "", photo: "", role: "user", country: "Global", level: 1, xp: 0, refCode: "", referredBy: "", verificationStatus: "pending", riskScore: 0, banned: false, banReason: "", totalOffers: 0, totalWithdrawals: 0, streak: 0, lastLogin: 0, badges: [], devices: [], createdAt: Date.now() };
   },
   isLoggedIn: function() { return !!(FB.ok && FB.user); },
   isAdmin: function() { return this.profile && (this.profile.role === "admin" || this.profile.role === "super_admin"); },
+  getTopUsers: async function(limit) {
+    if (!FB.ok) return [];
+    try { var snap = await FB.db.collection(CONFIG.col.users).orderBy("level", "desc").limit(limit || 10).get(); var users = []; snap.forEach(function(d) { users.push(d.data()); }); return users; } catch (e) { return []; }
+  },
   addXP: function(amount) {
     if (!this.profile) return;
     this.profile.xp = (this.profile.xp || 0) + amount;
@@ -346,6 +369,34 @@ var GamesManager = {
   getAllRaw: async function() {
     if (!FB.ok) return CONFIG.defaultGames;
     try { var snap = await FB.db.collection(CONFIG.col.games).orderBy("order").get(); var games = []; snap.forEach(function(d) { games.push(d.data()); }); return games; } catch (e) { return CONFIG.defaultGames; }
+  },
+  getTopOffers: function(limit) {
+    var self = this;
+    var offers = [];
+    self.games.slice(0, limit || 4).forEach(function(g) {
+      offers.push({ id: g.id, name: g.name, icon: g.icon, color: g.color, reward: g.packages && g.packages[0] ? g.packages[0].coins : 9900, image: g.image });
+    });
+    return offers;
+  },
+  getTopGames: function(limit) {
+    return this.games.slice(0, limit || 4);
+  },
+  confirmOrder: async function(gameId, packageId, playerId) {
+    if (!UserState.isLoggedIn()) { UI.toast("Sign in first", "warning"); return false; }
+    var game = this.getById(gameId);
+    if (!game) { UI.toast("Game not found", "error"); return false; }
+    var pkg = null;
+    if (game.packages) { game.packages.forEach(function(p) { if (p.id === packageId) pkg = p; }); }
+    if (!pkg) { UI.toast("Package not found", "error"); return false; }
+    var w = await Wallet.get(FB.user.uid);
+    if (w.available < pkg.coins) { UI.toast("Not enough coins", "error"); return false; }
+    await Wallet.spend(FB.user.uid, "game_order", pkg.coins, game.name + " - " + (pkg.amount || packageId));
+    var order = { id: U.id(), userId: FB.user.uid, gameId: gameId, packageId: packageId, playerId: playerId, coins: pkg.coins, amount: pkg.amount, status: "pending", createdAt: Date.now() };
+    try { await FB.db.collection(CONFIG.col.orders).doc(order.id).set(order); } catch (e) {}
+    await Notifications.add(FB.user.uid, "order", "Order Placed!", game.name + " order placed. Coins deducted: " + U.coins(pkg.coins));
+    UI.toast("Order placed!", "success");
+    UserState.addXP(20);
+    return true;
   }
 };
 
@@ -364,6 +415,7 @@ var DailyRewards = {
     var last = UserState.profile.lastDailyClaim || 0;
     return Date.now() - last >= 86400000;
   },
+  claimedToday: function() { return !this.canClaim(); },
   claim: async function() {
     if (!UserState.isLoggedIn()) { UI.toast("Sign in first", "warning"); return; }
     if (!this.canClaim()) { UI.toast("Come back tomorrow!", "warning"); return; }
@@ -392,6 +444,12 @@ var SpinWheel = {
   colors: ["#FF6B35", "#5B9FFF", "#FF2E63", "#00FF9D", "#8B5CF6", "#FFE600", "#00BCD4", "#FF9800"],
   spinning: false,
   getPrizes: function() { return this.prizes; },
+  getCooldownLeft: function() {
+    if (!UserState.profile) return 0;
+    var last = UserState.profile.lastSpin || 0;
+    var left = CONFIG.spinCooldown - (Date.now() - last);
+    return left > 0 ? left : 0;
+  },
   canSpin: function() {
     if (!UserState.profile) return false;
     var last = UserState.profile.lastSpin || 0;
@@ -444,6 +502,21 @@ var ReferralSystem = {
   getLink: function() {
     if (!UserState.profile || !UserState.profile.refCode) return "";
     return CONFIG.site.url + "?ref=" + UserState.profile.refCode;
+  },
+  getStats: function() {
+    if (!UserState.profile) return { total: 0, active: 0, earnings: 0 };
+    return { total: UserState.profile.referrals || 0, active: 0, earnings: 0 };
+  },
+  getMilestones: function() {
+    return [
+      { id: "signup", name: { en: "First Signup", ar: "\u0623\u0648\u0644 \u062A\u0633\u062c\u064A\u0644" }, reward: CONFIG.earn.referralSignup, icon: "fa-user-plus" },
+      { id: "offer", name: { en: "First Offer", ar: "\u0623\u0648\u0644 \u0639\u0631\u0636" }, reward: CONFIG.earn.referralFirstOffer, icon: "fa-check-circle" },
+      { id: "withdraw", name: { en: "First Withdrawal", ar: "\u0623\u0648\u0644 \u0633\u062D\u0628\u0629" }, reward: CONFIG.earn.referralFirstWithdraw, icon: "fa-money-bill-wave" }
+    ];
+  },
+  getReferred: async function() {
+    if (!FB.ok || !FB.user) return [];
+    try { var snap = await FB.db.collection(CONFIG.col.users).where("referredBy", "==", FB.user.uid).limit(50).get(); var list = []; snap.forEach(function(d) { list.push(d.data()); }); return list; } catch (e) { return []; }
   }
 };
 
@@ -469,6 +542,15 @@ var Achievements = {
       }
     });
     UserState.sync();
+  },
+  getUnlocked: function() {
+    if (!UserState.profile) return [];
+    var self = this;
+    var unlocked = [];
+    this.list.forEach(function(ach) {
+      if (UserState.profile.badges && UserState.profile.badges.indexOf(ach.id) !== -1) unlocked.push(ach);
+    });
+    return unlocked;
   }
 };
 
@@ -511,6 +593,10 @@ var Notifications = {
       var snap = await FB.db.collection(CONFIG.col.notifications).where("userId", "==", userId).where("read", "==", false).get();
       return snap.size;
     } catch (e) { return 0; }
+  },
+  markRead: async function(notifId) {
+    if (!FB.ok) return;
+    try { await FB.db.collection(CONFIG.col.notifications).doc(notifId).update({ read: true }); } catch (e) {}
   }
 };
 
@@ -534,6 +620,12 @@ var AntiFraud = {
     } catch (e) {}
   },
   checkDuplicate: async function(uid) { return false; },
+  getStatus: function() {
+    if (!UserState.profile) return { risk: "none", score: 0 };
+    var score = this.getRiskScore(UserState.profile);
+    var level = score >= 80 ? "high" : score >= 40 ? "medium" : "low";
+    return { risk: level, score: score };
+  },
   getRiskScore: function(profile) {
     var score = 0;
     if (profile.banned) return 100;
@@ -3309,7 +3401,7 @@ var App = {
         I18n.toggle();
         var ac = document.getElementById("app");
         if (ac && Router.current && Router.routes[Router.current]) {
-          try { Router.routes[Router.current](Router.params); } catch(e) {}
+          try { Router.routes[Router.current](); } catch(e) {}
         }
       });
     }
