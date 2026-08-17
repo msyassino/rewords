@@ -200,6 +200,7 @@ var Auth = {
       }
     });
   },
+  initListener: function() { this.init(); },
   loadProfile: async function(uid) {
     if (!FB.ok || !uid) return;
     try {
@@ -390,6 +391,7 @@ var SpinWheel = {
   prizes: [20, 40, 60, 80, 100, 120, 150, 200],
   colors: ["#FF6B35", "#5B9FFF", "#FF2E63", "#00FF9D", "#8B5CF6", "#FFE600", "#00BCD4", "#FF9800"],
   spinning: false,
+  getPrizes: function() { return this.prizes; },
   canSpin: function() {
     if (!UserState.profile) return false;
     var last = UserState.profile.lastSpin || 0;
@@ -481,9 +483,27 @@ var Notifications = {
   get: async function(userId, limit) {
     if (!FB.ok) return [];
     try {
-      var snap = await FB.db.collection(CONFIG.col.notifications).where("userId", "==", userId).orderBy("timestamp", "desc").limit(limit || 20).get();
+      var snap = await FB.db.collection(CONFIG.col.notifications).where("userId", "==", userId).orderBy("createdAt", "desc").limit(limit || 20).get();
       var list = []; snap.forEach(function(d) { list.push(d.data()); }); return list;
     } catch (e) { return []; }
+  },
+  getAll: function() {
+    if (!FB.ok || !FB.user) return [];
+    var cached = LS.get("rw_notifs_" + FB.user.uid);
+    if (cached) return cached;
+    this.get(FB.user.uid, 50).then(function(list) {
+      if (FB.user) LS.set("rw_notifs_" + FB.user.uid, list);
+    });
+    return [];
+  },
+  getFaq: function(limit) {
+    return [
+      { q: { en: "How do I earn coins?", ar: "\u0643\u064a\u0641 \u0623\u0643\u0633\u0628 \u0639\u0646\u0627\u0626\u0631 \u0627\u0644\u0636\u0645\u0627\u0639\u0629\u061F" }, a: { en: "Complete offers, surveys, watch ads, spin the wheel, and claim daily rewards.", ar: "\u0623\u0646\u062C\u0632 \u0627\u0644\u0639\u0631\u0648\u0636\u060c \u0627\u0644\u0627\u0633\u062A\u062E\u0628\u0627\u0631\u0627\u062a\u060c \u0634\u0627\u0647\u062F \u0627\u0644\u0625\u0639\u0644\u0627\u0646\u0627\u062a\u060c \u0627\u0644\u062F\u0648\u0631\u0627\u0646 \u0627\u0644\u064A\u0648\u0645\u064A\u060c \u0648\u0645\u0637\u0627\u0644\u0628\u0627\u062A \u0627\u0644\u0645\u0639\u0627\u0645\u064A\u0629." } },
+      { q: { en: "What is the coin rate?", ar: "\u0645\u0627 \u0645\u0639\u062F\u0644 \u0633\u0639\u0631 \u0627\u0644\u0636\u0645\u0639\u0629\u061F" }, a: { en: "10,000 coins = $1.00 USD.", ar: "10,000 \u0636\u0645\u0639\u0629 = 1$ \u0623\u0645\u0631\u064A\u0643\u064A." } },
+      { q: { en: "How do withdrawals work?", ar: "\u0643\u064a\u0641 \u062a\u0639\u0645\u0644 \u0627\u0644\u0633\u062D\u0628\u0627\u062A\u061F" }, a: { en: "Request a withdrawal from your wallet. It will be reviewed and processed within 24-48 hours.", ar: "\u0637\u0644\u0628 \u0633\u062D\u0628 \u0645\u0646 \u0645\u062D\u0641\u0638\u062A\u0643. \u0633\u064A\u062A\u0645 \u0645\u0631\u0627\u062C\u0639\u062A\u0647 \u0648\u0645\u0639\u0627\u0644\u062C\u062A\u0647 \u062E\u0644\u0627\u0644 24-48 \u0633\u0627\u0639\u0629." } },
+      { q: { en: "Can I have multiple accounts?", ar: "\u0647\u0644 \u064A\u0645\u0643\u0646\u0646\u064A \u0627\u0644\u062D\u0635\u0648\u0644 \u0639\u0644\u0649 \u062D\u0633\u0627\u0628\u0627\u062A \u0645\u062A\u0639\u062F\u062F\u0629\u061F" }, a: { en: "No. One account per person. Multiple accounts will be banned.", ar: "\u0644\u0627. \u062D\u0633\u0627\u0628 \u0648\u0627\u062D\u062F \u0644\u0643\u0644 \u0634\u062E\u0635. \u0633\u064A\u062A\u0645 \u062D\u0638\u0631 \u0627\u0644\u062D\u0633\u0627\u0628\u0627\u062A \u0627\u0644\u0645\u062A\u0639\u062F\u062F\u0629." } },
+      { q: { en: "How do referrals work?", ar: "\u0643\u064a\u0641 \u062a\u0639\u0645\u0644 \u0627\u0644\u0625\u062D\u0627\u0644\u0629\u061F" }, a: { en: "Share your referral code. Earn 500 coins per signup, 1000 for first offer, 2000 for first withdrawal.", ar: "\u0634\u0627\u0631\u0643 \u0631\u0645\u0632 \u0627\u0644\u0625\u062D\u0627\u0644\u0629. \u0627\u0643\u0633\u0628 500 \u0636\u0645\u0639\u0629 \u0644\u0643\u0644 \u062A\u0633\u062C\u064A\u0644\u060c 1000 \u0644\u0623\u0648\u0644 \u0639\u0631\u0636\u060c 2000 \u0644\u0623\u0648\u0644 \u0633\u062D\u0628\u0629." } }
+    ].slice(0, limit || 5);
   },
   getUnreadCount: async function(userId) {
     if (!FB.ok) return 0;
@@ -3158,57 +3178,107 @@ var Router = {
 };
 
 
-// ─── App ─────────────────────────────────────────────────────
+var Effects = {
+  reveal: function() {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) { if (e.isIntersecting) e.target.classList.add("visible"); });
+    }, { threshold: 0.1 });
+    document.querySelectorAll(".reveal:not(.visible), .card:not(.visible), .game-card:not(.visible), .offer-card:not(.visible)").forEach(function(el) { obs.observe(el); });
+  }
+};
+
+var SpinRenderer = SpinRenderer || {
+  drawWheel: function(canvasId) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas || !canvas.getContext) return;
+    var prizes = SpinWheel.prizes || [20,40,60,80,100,120,150,200];
+    var colors = SpinWheel.colors || ['#FF6B35','#5B9FFF','#FF2E63','#00FF9D','#8B5CF6','#FFE600','#00BCD4','#FF9800'];
+    var ctx = canvas.getContext('2d');
+    var W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = Math.min(cx,cy)-12;
+    var count = prizes.length, arc = (2*Math.PI)/count;
+    ctx.clearRect(0,0,W,H);
+    for (var i = 0; i < count; i++) {
+      var startAngle = i*arc - Math.PI/2;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,startAngle,startAngle+arc);
+      ctx.closePath(); ctx.fillStyle = colors[i % colors.length]; ctx.fill();
+      ctx.strokeStyle = "#0a0a0f"; ctx.lineWidth = 2; ctx.stroke();
+      ctx.save(); ctx.translate(cx,cy); ctx.rotate(startAngle + arc/2);
+      ctx.fillStyle = "#fff"; ctx.font = "bold 14px Inter"; ctx.textAlign = "center";
+      ctx.fillText(prizes[i], R*0.6, 5); ctx.restore();
+    }
+    ctx.beginPath(); ctx.arc(cx,cy,18,0,2*Math.PI); ctx.fillStyle = "#0a0a0f"; ctx.fill();
+    ctx.beginPath(); ctx.arc(cx,cy,14,0,2*Math.PI); ctx.fillStyle = "#5B9FFF"; ctx.fill();
+  }
+};
+
+var U = U || {};
+U.id = U.id || function(x) { return document.getElementById(x); };
+
 var App = {
   init: function () {
     try { FB.init(); } catch (e) { console.warn("FB init:", e); }
+    if (typeof I18n.lang === "function") {
+      var langVal = LS.get("lang") || "en";
+      I18n.lang(langVal);
+    }
+    try { Theme.init(); } catch (e) {}
 
-    I18n.lang(U.id("langSelect").value || LS.get("lang") || "ar");
-    Theme.init();
-
-    Router.register("home", function () {
-      Pages.renderHome();
-      U.id("navEarn") && U.id("navEarn").classList.remove("active");
-    });
-
-    Router.register("earn", function () { Pages.renderEarn(); });
-    Router.register("earn/offerwalls", function () { Pages.renderOfferwalls(); });
-    Router.register("earn/games", function () { Pages.renderEarnGames(); });
-    Router.register("earn/surveys", function () { Pages.renderSurveys(); });
-    Router.register("earn/ads", function () { Pages.renderEarnAds(); });
-    Router.register("daily", function () { DailyRewards.render(); });
-    Router.register("spin", function () { SpinWheel.render(); });
-    Router.register("games", function () { Pages.renderGames(); });
-    Router.register("order", function (gameId) { GamesManager.renderOrder(gameId); });
-    Router.register("rewards", function () { Pages.renderRewards(); });
-    Router.register("rewards/topup", function () { Pages.renderTopUp(); });
-    Router.register("rewards/gift-cards", function () { Pages.renderGiftCards(); });
-    Router.register("wallet", function () { Wallet.render(); });
-    Router.register("transactions", function () { Ledger.render(); });
-    Router.register("profile", function () { Pages.renderProfile(); });
-    Router.register("referral", function () { ReferralSystem.render(); });
-    Router.register("leaderboard", function () { Pages.renderLeaderboard(); });
-    Router.register("notifications", function () { Notifications.render(); });
-    Router.register("support", function () { Tickets.render(); });
-    Router.register("faq", function () { Pages.renderFAQ(); });
-    Router.register("terms", function () { Pages.renderTerms(); });
-    Router.register("privacy", function () { Pages.renderPrivacy(); });
-    Router.register("anti-fraud", function () { AntiFraud.render(); });
-    Router.register("register", function () { Auth.renderRegister(); });
+    Router.register("home", function () { Pages.home(); });
+    Router.register("earn", function () { Pages.earn(); });
+    Router.register("earn/offerwalls", function () { Pages.earnOfferwalls(); });
+    Router.register("earn/games", function () { Pages.earnGames(); });
+    Router.register("earn/surveys", function () { Pages.earnSurveys(); });
+    Router.register("earn/ads", function () { Pages.earnAds(); });
+    Router.register("daily", function () { Pages.daily(); });
+    Router.register("spin", function () { Pages.spin(); });
+    Router.register("games", function () { Pages.games(); });
+    Router.register("order", function (gameId) { Pages.order(gameId); });
+    Router.register("rewards", function () { Pages.rewards(); });
+    Router.register("rewards/topup", function () { Pages.rewards(); });
+    Router.register("rewards/gift-cards", function () { Pages.rewards(); });
+    Router.register("wallet", function () { Pages.wallet(); });
+    Router.register("transactions", function () { Pages.transactions(); });
+    Router.register("profile", function () { Pages.profile(); });
+    Router.register("referral", function () { Pages.referral(); });
+    Router.register("leaderboard", function () { Pages.leaderboard(); });
+    Router.register("notifications", function () { Pages.notifications(); });
+    Router.register("support", function () { Pages.support(); });
+    Router.register("faq", function () { Pages.faq(); });
+    Router.register("terms", function () { Pages.terms(); });
+    Router.register("privacy", function () { Pages.privacy(); });
+    Router.register("anti-fraud", function () { Pages.antiFraud(); });
+    Router.register("register", function () { Pages.register(); });
     Router.register("admin", function () {
       if (!UserState.isAdmin()) { Router.go("home"); return; }
       AdminPanel.render();
     });
-    Router.register("login", function () { Auth.renderLogin(); });
+    Router.register("admin/:tab", function (params) {
+      if (!UserState.isAdmin()) { Router.go("home"); return; }
+      AdminPanel.render(params.tab);
+    });
+    Router.register("login", function () {
+      var ac = document.getElementById("app"); if (!ac) return;
+      var ar = I18n.lang === "ar";
+      var h = '<div class="auth-container"><div class="auth-card glass">';
+      h += '<h2 class="text-center mb-lg">' + (ar ? "\u062a\u0633\u062c\u064A\u0644 \u0627\u0644\u062f\u062e\u0648\u0644" : "Sign In") + '</h2>';
+      h += '<form id="login-form">';
+      h += '<div class="fg"><label>' + (ar ? "\u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u062A\u0631\u0648\u0646\u064A" : "Email") + '</label><input type="email" id="login-email" class="fi" required></div>';
+      h += '<div class="fg"><label>' + (ar ? "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631" : "Password") + '</label><input type="password" id="login-pass" class="fi" required minlength="6"></div>';
+      h += '<button type="submit" class="btn btn-primary btn-block">' + (ar ? "\u062a\u0633\u062c\u064A\u0644 \u0627\u0644\u062f\u062e\u0648\u0644" : "Sign In") + '</button>';
+      h += '</form>';
+      h += '<p class="text-center mt-md" style="color:var(--text2)">' + (ar ? "\u0644\u064A\u0633 \u0644\u062f\u064A\u0643 \u062d\u0633\u0627\u0628\u061F " : "No account? ") + '<a href="#/register">' + (ar ? "\u0633\u062c\u064A\u0644 \u062d\u0633\u0627\u0628" : "Register") + '</a></p>';
+      h += '</div></div>';
+      ac.innerHTML = h;
+      var form = document.getElementById("login-form");
+      if (form) form.addEventListener("submit", function(e) { e.preventDefault(); Auth.login(document.getElementById("login-email").value, document.getElementById("login-pass").value); });
+    });
 
-    Auth.initListener();
-
+    Auth.init();
     FX.init();
     GamesManager.load();
-    Notifications.init();
 
     if (!LS.get("cookieConsent")) {
-      var bar = document.getElementById("cookieBar");
+      var bar = document.getElementById("cookie-bar");
       if (bar) bar.classList.add("show");
     }
 
@@ -3216,9 +3286,7 @@ var App = {
 
     var params = new URLSearchParams(window.location.search);
     var ref = params.get("ref");
-    if (ref) {
-      LS.set("referralCode", ref);
-    }
+    if (ref) LS.set("referralCode", ref);
 
     Router.init();
     UI.hideLoader();
@@ -3226,25 +3294,27 @@ var App = {
   },
 
   bindEvents: function () {
-    var langSel = document.getElementById("langSelect");
-    if (langSel) {
-      langSel.addEventListener("change", function () {
-        I18n.lang(this.value);
-        LS.set("lang", this.value);
+    var langBtn = document.getElementById("lang-btn");
+    if (langBtn) {
+      langBtn.addEventListener("click", function () {
+        var newLang = I18n.lang === "ar" ? "en" : "ar";
+        I18n.lang(newLang);
+        LS.set("lang", newLang);
+        var label = langBtn.querySelector(".lang-label");
+        if (label) label.textContent = newLang.toUpperCase();
+        var ac = document.getElementById("app");
+        if (ac && Router.current && Router.routes[Router.current]) {
+          try { Router.routes[Router.current](Router.params); } catch(e) {}
+        }
       });
     }
 
-    var themeBtn = document.getElementById("themeToggle");
+    var themeBtn = document.getElementById("theme-btn");
     if (themeBtn) {
       themeBtn.addEventListener("click", function () { Theme.toggle(); });
     }
 
-    var fxBtn = document.getElementById("fxToggle");
-    if (fxBtn) {
-      fxBtn.addEventListener("click", function () { FX.toggle(); });
-    }
-
-    var authBtn = document.getElementById("authBtn");
+    var authBtn = document.getElementById("auth-btn");
     if (authBtn) {
       authBtn.addEventListener("click", function () {
         if (UserState.isLoggedIn()) {
@@ -3255,41 +3325,102 @@ var App = {
       });
     }
 
-    var logoutBtn = document.getElementById("logoutBtn");
+    var logoutBtn = document.getElementById("logout-btn");
     if (logoutBtn) {
-      logoutBtn.addEventListener("click", async function () {
-        try { await FB.auth.signOut(); } catch (e) { /* ignore */ }
-        UserState.defaults();
-        UI.toast("\u062a\u0645 \u062a\u0633\u062c\u064a\u0644 \u0627\u0644\u062e\u0631\u0648\u062c", "success");
-        Router.go("home");
+      logoutBtn.addEventListener("click", function () { Auth.logout(); });
+    }
+
+    var mobileToggle = document.getElementById("mobile-toggle");
+    var mobileMenu = document.getElementById("mobile-menu");
+    if (mobileToggle && mobileMenu) {
+      mobileToggle.addEventListener("click", function () {
+        mobileMenu.classList.toggle("open");
       });
     }
 
-    var mobileBtn = document.getElementById("mobileMenuBtn");
-    var mobileNav = document.getElementById("mobileNav");
-    if (mobileBtn && mobileNav) {
-      mobileBtn.addEventListener("click", function () {
-        mobileNav.classList.toggle("open");
-      });
-    }
-
-    var cookieAccept = document.getElementById("cookieAccept");
-    if (cookieAccept) {
-      cookieAccept.addEventListener("click", function () {
+    var cookieOk = document.getElementById("cookie-ok");
+    if (cookieOk) {
+      cookieOk.addEventListener("click", function () {
         LS.set("cookieConsent", "1");
-        var bar = document.getElementById("cookieBar");
+        var bar = document.getElementById("cookie-bar");
         if (bar) bar.classList.remove("show");
       });
     }
 
-    document.querySelectorAll("[data-page]").forEach(function (el) {
-      el.addEventListener("click", function (e) {
+    var navBalanceBtn = document.getElementById("nav-balance-btn");
+    if (navBalanceBtn) {
+      navBalanceBtn.addEventListener("click", function () { Router.go("wallet"); });
+    }
+
+    var notifBtn = document.getElementById("notif-btn");
+    if (notifBtn) {
+      notifBtn.addEventListener("click", function () {
+        if (UserState.isLoggedIn()) { Router.go("notifications"); } else { UI.openModal("auth-modal"); }
+      });
+    }
+
+    var authForm = document.getElementById("auth-form");
+    if (authForm) {
+      authForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        var page = el.getAttribute("data-page");
-        Router.go(page);
-        if (mobileNav) mobileNav.classList.remove("open");
+        var mode = Auth.mode;
+        var email = document.getElementById("af-email").value;
+        var pass = document.getElementById("af-pass").value;
+        if (mode === "login") {
+          Auth.login(email, pass);
+        } else {
+          var name = document.getElementById("af-name").value;
+          var ref = document.getElementById("af-ref").value;
+          Auth.register(name, email, pass, ref);
+        }
+      });
+    }
+
+    document.querySelectorAll(".auth-tab").forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        document.querySelectorAll(".auth-tab").forEach(function(t) { t.classList.remove("active"); });
+        tab.classList.add("active");
+        Auth.mode = tab.getAttribute("data-tab");
+        var nameField = document.getElementById("fg-name");
+        var refField = document.getElementById("fg-ref");
+        var title = document.getElementById("auth-modal-title");
+        var submit = document.getElementById("auth-submit");
+        if (Auth.mode === "register") {
+          if (nameField) nameField.style.display = "";
+          if (refField) refField.style.display = "";
+          if (title) title.innerHTML = '<i class="fas fa-user-plus"></i> Register';
+          if (submit) submit.textContent = "Register";
+        } else {
+          if (nameField) nameField.style.display = "none";
+          if (refField) refField.style.display = "none";
+          if (title) title.innerHTML = '<i class="fas fa-user"></i> Sign In';
+          if (submit) submit.textContent = "Sign In";
+        }
       });
     });
+
+    var ticketForm = document.getElementById("ticket-form");
+    if (ticketForm) {
+      ticketForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        Tickets.submit(document.getElementById("tk-subject").value, document.getElementById("tk-message").value);
+        UI.closeModal("ticket-modal");
+      });
+    }
+
+    document.querySelectorAll(".mobile-link").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (mobileMenu) mobileMenu.classList.remove("open");
+      });
+    });
+
+    var backToTop = document.getElementById("back-to-top");
+    if (backToTop) {
+      window.addEventListener("scroll", function () {
+        if (window.scrollY > 400) { backToTop.classList.add("show"); } else { backToTop.classList.remove("show"); }
+      });
+      backToTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    }
   }
 };
 
