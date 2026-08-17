@@ -2,12 +2,31 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AdTopUp - Free Game Top-Up Powered by Ads</title>
-<meta name="description" content="Top up your favorite mobile games for free by watching ads. Transparent, secure, and fast.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>ReWords - Free Game Top-Up Powered by Ads</title>
+<meta name="description" content="Top up your favorite mobile games for free by watching ads. Free Fire, PUBG, Mobile Legends, Roblox, COD and more. Transparent, secure, and fast.">
+<meta name="keywords" content="free top up, game credits, free fire diamonds, pubg UC, mobile legends, roblox robux, earn points, watch ads">
+<meta name="author" content="ReWords">
+<meta name="robots" content="index, follow">
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
 <meta http-equiv="X-Frame-Options" content="DENY">
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ReWords">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ReWords - Free Game Top-Up">
+<meta property="og:description" content="Top up your favorite mobile games for free by watching ads.">
+<meta property="og:url" content="https://rewords.alouanepx.workers.dev/">
+<meta property="og:site_name" content="ReWords">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ReWords - Free Game Top-Up">
+<meta name="twitter:description" content="Top up your favorite mobile games for free by watching ads.">
+<link rel="canonical" href="https://rewords.alouanepx.workers.dev/">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
@@ -16,12 +35,13 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 <link rel="stylesheet" href="style.css">
+<script src="https://pl30883338.effectivecpmnetwork.com/f2/a0/3c/f2a03c3e517e5b8b30ca73eac42e76ce.js"></script>
 </head>
 <body>
 <div class="loader" id="loader">
 <div class="loader-content">
 <div class="loader-logo"><i class="fas fa-gamepad"></i></div>
-<span class="loader-title">ADTOPUP</span>
+<span class="loader-title">REWORDS</span>
 <span class="loader-subtitle">Initializing System...</span>
 <div class="loader-bar"><div class="loader-progress"></div></div>
 </div>
@@ -36,7 +56,7 @@
 <a href="#home" class="navbar-logo">
 <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
 <div class="navbar-logo-text">
-<span class="logo-main">ADTOPUP</span>
+<span class="logo-main">REWORDS</span>
 <span class="logo-sub">GAMING HUB</span>
 </div>
 </a>
@@ -44,6 +64,7 @@
 <a href="#home" class="nav-link active">Home</a>
 <a href="#games" class="nav-link">Games</a>
 <a href="#earn" class="nav-link">Earn Points</a>
+<a href="#spin" class="nav-link">Spin</a>
 <a href="#orders" class="nav-link">My Orders</a>
 <a href="#how" class="nav-link">How It Works</a>
 </div>
@@ -73,8 +94,10 @@
 <a href="#home" class="mobile-nav-link">Home</a>
 <a href="#games" class="mobile-nav-link">Games</a>
 <a href="#earn" class="mobile-nav-link">Earn Points</a>
+<a href="#spin" class="mobile-nav-link">Spin</a>
 <a href="#orders" class="mobile-nav-link">My Orders</a>
 <a href="#how" class="mobile-nav-link">How It Works</a>
+<a href="#updates" class="mobile-nav-link">Updates</a>
 </div>
 </nav>
 
@@ -82,20 +105,25 @@
 <div class="app-container" id="app-container"></div>
 </main>
 
+<div class="ad-banner-container" id="ad-banner-mid" style="text-align:center;padding:var(--space-lg) 0;">
+<script async="async" data-cfasync="false" src="https://pl30883341.effectivecpmnetwork.com/f4263ddbfe2b4cb1e4ebdad01fc57d37/invoke.js"></script>
+<div id="container-f4263ddbfe2b4cb1e4ebdad01fc57d37"></div>
+</div>
+
 <footer class="footer">
 <div class="footer-container">
 <div class="footer-top">
 <div class="footer-brand">
 <div class="footer-logo">
 <div class="navbar-logo-icon"><i class="fas fa-gamepad"></i></div>
-<span class="footer-logo-text">ADTOPUP</span>
+<span class="footer-logo-text">REWORDS</span>
 </div>
-<p class="footer-description">Top up your favorite mobile games for free by watching ads. Transparent, secure, and 100% funded by advertisements.</p>
-<div class="footer-social">
-<a href="#" class="social-link"><i class="fab fa-discord"></i></a>
-<a href="#" class="social-link"><i class="fab fa-telegram"></i></a>
-<a href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
-<a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+<p class="footer-description" id="footer-description">Top up your favorite mobile games for free by watching ads. Transparent, secure, and 100% funded by advertisements.</p>
+<div class="footer-social" id="footer-social">
+<a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-discord"></i></a>
+<a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-telegram"></i></a>
+<a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>
+<a href="#" class="social-link" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
 </div>
 </div>
 <div class="footer-links">
@@ -104,7 +132,9 @@
 <li><a href="#home">Home</a></li>
 <li><a href="#games">Games</a></li>
 <li><a href="#earn">Earn Points</a></li>
+<li><a href="#spin">Spin Wheel</a></li>
 <li><a href="#orders">Track Order</a></li>
+<li><a href="#updates">Updates</a></li>
 </ul>
 </div>
 <div class="footer-links">
@@ -120,8 +150,8 @@
 </div>
 </div>
 <div class="footer-bottom">
-<p>© 2026 AdTopUp. All rights reserved.</p>
-<p class="footer-ad-notice">⚡ This site is 100% funded by advertisements.</p>
+<p>&copy; 2026 ReWords. All rights reserved.</p>
+<p class="footer-ad-notice">This site is 100% funded by advertisements.</p>
 </div>
 </div>
 </footer>
@@ -143,13 +173,17 @@
 <label class="form-label">Username</label>
 <input type="text" class="form-input" id="auth-name" placeholder="Gamer123" maxlength="30">
 </div>
+<div class="form-group" id="auth-ref-group" style="display:none;">
+<label class="form-label">Referral Code (optional)</label>
+<input type="text" class="form-input" id="auth-ref" placeholder="Enter code" maxlength="10">
+</div>
 <div class="form-group">
 <label class="form-label">Email</label>
 <input type="email" class="form-input" id="auth-email" placeholder="you@email.com" required>
 </div>
 <div class="form-group">
 <label class="form-label">Password</label>
-<input type="password" class="form-input" id="auth-password" placeholder="••••••••" minlength="6" required>
+<input type="password" class="form-input" id="auth-password" placeholder="Min 6 characters" minlength="6" required>
 </div>
 <button type="submit" class="btn btn-primary" style="width:100%;">
 <span id="auth-submit-text">Login</span>
@@ -241,6 +275,29 @@
 </div>
 </div>
 
+<div class="modal" id="ticket-modal">
+<div class="modal-backdrop" onclick="UI.closeModal('ticket-modal')"></div>
+<div class="modal-content auth-modal-content">
+<div class="auth-header">
+<h2 class="auth-title"><i class="fas fa-headset"></i> Support Ticket</h2>
+<button class="modal-close" onclick="UI.closeModal('ticket-modal')"><i class="fas fa-times"></i></button>
+</div>
+<div class="auth-body">
+<form id="ticket-form">
+<div class="form-group">
+<label class="form-label">Subject</label>
+<input type="text" class="form-input" id="ticket-subject" placeholder="Brief description" required maxlength="100">
+</div>
+<div class="form-group">
+<label class="form-label">Message</label>
+<textarea class="form-input" id="ticket-message" placeholder="Describe your issue..." required maxlength="1000" rows="4"></textarea>
+</div>
+<button type="submit" class="btn btn-primary" style="width:100%;"><i class="fas fa-paper-plane"></i> Submit Ticket</button>
+</form>
+</div>
+</div>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
 <button class="back-to-top" id="back-to-top"><i class="fas fa-arrow-up"></i></button>
 
@@ -255,5 +312,7 @@
 </div>
 
 <script src="app.js"></script>
+<script src="https://quge5.com/88/tag.min.js" data-zone="270698" async data-cfasync="false"></script>
+<script src="https://pl30883339.effectivecpmnetwork.com/4e/ac/77/4eac77d9d06816802aaaabe459e4ee83.js"></script>
 </body>
 </html>
